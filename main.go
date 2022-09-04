@@ -1,13 +1,23 @@
 package main
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"log"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/tony/jwt-auth/database"
+	"github.com/tony/jwt-auth/routes"
+)
 
 func main() {
-    app := fiber.New()
+	database.Connect()
+	app := fiber.New()
 
-	app.Get("/", func(c *fiber.Ctx) error{
-		return c.SendString("Hello, World!")
-	})
+	app.Use(cors.New(cors.Config{
+		AllowCredentials: true,
+	}))
 
-	app.Listen(":3000")
+	routes.Setup(app)
+
+	log.Fatal(app.Listen(":8000"))
 }
